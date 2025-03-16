@@ -13,18 +13,17 @@ st.title(
        ********* m5C-iEnsem *********
 """
 )
-# st.subheader("""5-Methylcytosine (m5c) is a modified cytosine base which is formed as the result of addition of methyl group added at position 5 of carbon. This modification is one of the most common PTM that used to occur in almost all types of RNA. The conventional laboratory methods do not provide quick reliable identification of m5c sites. However, the sequence data readiness has made it feasible to develop computationally intelligent models that optimize the identification process for accuracy and robustness. The present research focused on the development of in-silico methods built using ensemble models. The encoded data was then fed into ensemble models, which included bagging and boosting ensemble model as well. After that, the models were subjected to a rigorous evaluation process that included both independent set testing and 10-fold cross validation. The results revealed that Bagging ensemble model, outperformed revealing 100% accuracy while comparing with existing m5c predictors.
-# """)
+#st.subheader("""5-Methylcytosine (m5c) is a modified cytosine base which is formed as the result of addition of methyl group added at position 5 of carbon. This modification is one of the most common PTM that used to occur in almost all types of RNA. The conventional laboratory methods do not provide quick reliable identification of m5c sites. However, the sequence data readiness has made it feasible to develop computationally intelligent models that optimize the identification process for accuracy and robustness. The present research focused on the development of in-silico methods built using ensemble models. The encoded data was then fed into ensemble models, which included bagging and boosting ensemble model as well. After that, the models were subjected to a rigorous evaluation process that included both independent set testing and 10-fold cross validation. The results revealed that Bagging ensemble model, outperformed revealing 100% accuracy while comparing with existing m5c predictors.
+#""")
 
-# ---------------------------------#
+#---------------------------------#
 image = Image.open('Flow_Chart.jpg')
 st.image(image)
 
-
-# str22 = "CGCCUCCCACGCGGGAGACCCGGGUUCAAUUCCCGGCCAAU"
-# st.subheader("Kindly click the EXAMPLE button for sample RNA sequence")
-# if st.button('Example'):
-#   st.write(str22)
+#str22 = "CGCCUCCCACGCGGGAGACCCGGGUUCAAUUCCCGGCCAAU"
+#st.subheader("Kindly click the EXAMPLE button for sample RNA sequence")
+#if st.button('Example'):
+ #   st.write(str22)
 
 
 def seqToMat(seq):
@@ -719,9 +718,10 @@ def processAllStrings(fname):
 i = 0
 allFVs = []
 
-
 def input_seq():
-    # st.subheader("Input Sequence of any length")
+    #st.subheader("Input Sequence of any length")
+
+    
 
     # Initialize the session state for the sequence if not already set
     if 'sequence1' not in st.session_state:
@@ -739,18 +739,18 @@ def input_seq():
     st.session_state.sequence1 = sequence1  # Update session state with user input
 
     # Display the current value of the sequence
-    # st.write(st.session_state.sequence1)
+    #st.write(st.session_state.sequence1)
 
     # Submit button logic
     if st.button("Submit"):
-        # st.write(st.session_state.sequence1)  # Display the sequence when submitted
+        #st.write(st.session_state.sequence1)  # Display the sequence when submitted
 
         # abc will be assigned the current value of sequence1 (whether manually entered or auto-filled)
-        # abc = str(sequence1)
-        # st.write(sequence1)
+        #abc = str(sequence1)
+        #st.write(sequence1)
         abc = sequence1
-        # st.write(sequence1)
-        # st.write(f"Submitted Sequence: {abc}")
+        #st.write(sequence1)
+        #st.write(f"Submitted Sequence: {abc}")
         count = []
         keeper = []
         len1 = len(abc)
@@ -764,33 +764,34 @@ def input_seq():
         for i in range(len3):
             s = count[i]
 
-            if s <= 20 and s <= len2:
+            if s <= 20 and s<=len2:
                 n = len2 - s
                 m = 20 - s
-                # n = 20 - m
+            # n = 20 - m
                 str1 = ("U" * m)
                 str2 = abc[s - s:s]
 
+
                 if n <= 20:
                     o = 20 - n
-                    str4 = abc[s:s + n + 1]
+                    str4 = abc[s:s + n+1]
                     str5 = ("U" * o)
-                    str6 = "".join((str1, str2, str4, str5))
+                    str6 = "".join((str1, str2,str4, str5))
                     keeper.append(str6)
                 elif n > 20:
                     str4A = abc[s:s + 21]
-                    str6A = "".join((str1, str2, str4A))
+                    str6A = "".join((str1, str2,str4A))
 
                     keeper.append(str6A)
 
-            elif s > 20:
+            elif s > 20 :
                 n1 = len1 - s
-                str7 = abc[s - 20:s + 1]
+                str7 = abc[s-20:s+1]
                 if n1 <= 20:
                     o1 = 20 - n1
                     o1 = o1 + 1
                     str9 = ("C" * o1)
-                    str8 = abc[s:s + n1 - 1]
+                    str8 = abc[s:s + n1-1]
 
                     str10 = "".join((str7, str8, str9))
 
@@ -816,17 +817,18 @@ def input_seq():
         np.random.seed(5)
         inputSize = 522
         outputcol = inputSize + 1
-        # dataset = np.genfromtxt("IISequence_FVs_for_test.csv", delimiter=",", dtype=float)
+        #dataset = np.genfromtxt("IISequence_FVs_for_test.csv", delimiter=",", dtype=float)
         df = pd.read_csv("IISequence_FVs_for_test.csv", sep=',', header=None)
         W = df.iloc[:, :].values
         Y = df.iloc[:, -1].values
-        # W = dataset[:, 0:inputSize]
-        # Y = dataset[:, -1]
+        #W = dataset[:, 0:inputSize]
+        #Y = dataset[:, -1]
         std_scale = StandardScaler().fit(W)
         W = std_scale.transform(W)
         load_model = pickle.load(open('Final_model.pkl', 'rb'))
         pred = load_model.predict(W)
         output_proba = load_model.predict_proba(W)[:, 1]
+
 
         lno = len(output_proba)
 
@@ -844,4 +846,3 @@ def input_seq():
 
 
 input_seq()
-
