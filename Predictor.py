@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import pandas as pd
 import streamlit as st
 from Bio import SeqIO
@@ -13,17 +13,18 @@ st.title(
        ********* m5C-iEnsem *********
 """
 )
-#st.subheader("""5-Methylcytosine (m5c) is a modified cytosine base which is formed as the result of addition of methyl group added at position 5 of carbon. This modification is one of the most common PTM that used to occur in almost all types of RNA. The conventional laboratory methods do not provide quick reliable identification of m5c sites. However, the sequence data readiness has made it feasible to develop computationally intelligent models that optimize the identification process for accuracy and robustness. The present research focused on the development of in-silico methods built using ensemble models. The encoded data was then fed into ensemble models, which included bagging and boosting ensemble model as well. After that, the models were subjected to a rigorous evaluation process that included both independent set testing and 10-fold cross validation. The results revealed that Bagging ensemble model, outperformed revealing 100% accuracy while comparing with existing m5c predictors.
-#""")
+# st.subheader("""5-Methylcytosine (m5c) is a modified cytosine base which is formed as the result of addition of methyl group added at position 5 of carbon. This modification is one of the most common PTM that used to occur in almost all types of RNA. The conventional laboratory methods do not provide quick reliable identification of m5c sites. However, the sequence data readiness has made it feasible to develop computationally intelligent models that optimize the identification process for accuracy and robustness. The present research focused on the development of in-silico methods built using ensemble models. The encoded data was then fed into ensemble models, which included bagging and boosting ensemble model as well. After that, the models were subjected to a rigorous evaluation process that included both independent set testing and 10-fold cross validation. The results revealed that Bagging ensemble model, outperformed revealing 100% accuracy while comparing with existing m5c predictors.
+# """)
 
-#---------------------------------#
+# ---------------------------------#
 image = Image.open('Flow_Chart.jpg')
 st.image(image)
 
-#str22 = "CGCCUCCCACGCGGGAGACCCGGGUUCAAUUCCCGGCCAAU"
-#st.subheader("Kindly click the EXAMPLE button for sample RNA sequence")
-#if st.button('Example'):
- #   st.write(str22)
+
+# str22 = "CGCCUCCCACGCGGGAGACCCGGGUUCAAUUCCCGGCCAAU"
+# st.subheader("Kindly click the EXAMPLE button for sample RNA sequence")
+# if st.button('Example'):
+#   st.write(str22)
 
 
 def seqToMat(seq):
@@ -718,35 +719,38 @@ def processAllStrings(fname):
 i = 0
 allFVs = []
 
-import numpy as np
-import pandas as pd
-import streamlit as st
-import joblib  # Use joblib instead of pickle
-from sklearn.preprocessing import StandardScaler
 
-# Load the model with error handling
-try:
-    load_model = joblib.load('Final_model.joblib')
-    st.success("Model loaded successfully!")
-except Exception as e:
-    st.error(f"Error loading model: {e}")
-    st.stop()  # Stop the app if the model fails to load
-
-# Function to process input sequence
 def input_seq():
+    # st.subheader("Input Sequence of any length")
+
+    # Initialize the session state for the sequence if not already set
     if 'sequence1' not in st.session_state:
         st.session_state.sequence1 = ""
 
+    # Sample RNA sequence
     str22 = "CGCCUCCCACGCGGGAGACCCGGGUUCAAUUCCCGGCCAAU"
 
+    # Button to automatically populate the text area with the sample sequence
     if st.button('Sample Sequence'):
-        st.session_state.sequence1 = str22
+        st.session_state.sequence1 = str22  # Assign sample sequence to session state
 
+    # Text area for sequence input (with the option to be filled by the sample sequence)
     sequence1 = st.text_area("Sequence Input", value=st.session_state.sequence1, height=200)
-    st.session_state.sequence1 = sequence1
+    st.session_state.sequence1 = sequence1  # Update session state with user input
 
+    # Display the current value of the sequence
+    # st.write(st.session_state.sequence1)
+
+    # Submit button logic
     if st.button("Submit"):
+        # st.write(st.session_state.sequence1)  # Display the sequence when submitted
+
+        # abc will be assigned the current value of sequence1 (whether manually entered or auto-filled)
+        # abc = str(sequence1)
+        # st.write(sequence1)
         abc = sequence1
+        # st.write(sequence1)
+        # st.write(f"Submitted Sequence: {abc}")
         count = []
         keeper = []
         len1 = len(abc)
@@ -759,9 +763,11 @@ def input_seq():
         len3 = len(count)
         for i in range(len3):
             s = count[i]
+
             if s <= 20 and s <= len2:
                 n = len2 - s
                 m = 20 - s
+                # n = 20 - m
                 str1 = ("U" * m)
                 str2 = abc[s - s:s]
 
@@ -774,6 +780,7 @@ def input_seq():
                 elif n > 20:
                     str4A = abc[s:s + 21]
                     str6A = "".join((str1, str2, str4A))
+
                     keeper.append(str6A)
 
             elif s > 20:
@@ -784,15 +791,19 @@ def input_seq():
                     o1 = o1 + 1
                     str9 = ("C" * o1)
                     str8 = abc[s:s + n1 - 1]
+
                     str10 = "".join((str7, str8, str9))
+
                     keeper.append(str10)
                 elif n1 > 20:
                     str8A = abc[s:s + 20]
                     str10A = "".join((str7, str8A))
+
                     keeper.append(str10A)
 
+        # print("##############################################################################")
         klen = len(keeper)
-        allFVs = []
+
         for i in range(klen):
             seq = keeper[i]
             allFVs.append(calcFV(seq.lower()))
@@ -802,16 +813,25 @@ def input_seq():
             for fv in allFVs:
                 fvWriter.writerow(fv)
 
+        np.random.seed(5)
+        inputSize = 522
+        outputcol = inputSize + 1
+        # dataset = np.genfromtxt("IISequence_FVs_for_test.csv", delimiter=",", dtype=float)
         df = pd.read_csv("IISequence_FVs_for_test.csv", sep=',', header=None)
         W = df.iloc[:, :].values
+        Y = df.iloc[:, -1].values
+        # W = dataset[:, 0:inputSize]
+        # Y = dataset[:, -1]
         std_scale = StandardScaler().fit(W)
         W = std_scale.transform(W)
-
+        load_model = pickle.load(open('Final_model.pkl', 'rb'))
         pred = load_model.predict(W)
         output_proba = load_model.predict_proba(W)[:, 1]
 
         lno = len(output_proba)
+
         for i in range(lno):
+
             st.subheader("Site Number = ")
             st.write(count[i])
             st.subheader("Sequence")
@@ -822,5 +842,6 @@ def input_seq():
             else:
                 st.info("Output = Non-5-Methylcytosine Site")
 
-# Run the function
+
 input_seq()
+
